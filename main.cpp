@@ -1,14 +1,10 @@
 /*main.cpp*/
 
-//
-// Program to input Nodes (positions) and Buildings from
-// an Open Street Map file.
-// 
-// Prof. Joe Hummel
-// Northwestern University
-// CS 211: Winter 2023
-// 
+/// <sumary>
+/// Main file
+/// <summary>
 
+// Import relevant files & libraries
 #include <iostream>
 #include <string>
 #include <iomanip>
@@ -17,7 +13,6 @@
 #include <map>
 #include <set>
 #include <stack>
-
 #include "building.h"
 #include "buildings.h"
 #include "dist.h"
@@ -28,17 +23,17 @@
 #include "nodes.h"
 #include "osm.h"
 #include "tinyxml2.h"
-
 using namespace std;
 using namespace tinyxml2;
 
-//helper function for adding vertices
+// Helper function - add vertices to graph
 void add_vertices(Nodes& nodes, graph& g) {
   for (auto& n : nodes) {
     g.addVertex(n.second.getID());
   }
 }
 
+// Helper function - create edges to add to graph weighted by distance
 void add_footway_edges(Footway& footway, graph& g, Nodes& nodes) {
   for (size_t i = 1; i < footway.NodeIDs.size(); i++) {
     long long node1 = footway.NodeIDs[i-1];
@@ -54,43 +49,16 @@ void add_footway_edges(Footway& footway, graph& g, Nodes& nodes) {
     g.addEdge(node1, node2, distBetween2Points(lat1, long1, lat2, long2));
     g.addEdge(node2, node1, distBetween2Points(lat2, long2, lat1, long1));
   }
-
 }
 
+// Helper function - add edge to graph
 void add_edges(Footways& footways, graph& g, Nodes& nodes) {
   for (Footway f : footways.MapFootways) {
     add_footway_edges(f, g, nodes);
   }
 }
 
-void sanity_check(Footway& f, Nodes& nodes) {
-  for (size_t i = 1; i < f.NodeIDs.size(); i++) {
-    long long node1 = f.NodeIDs[i-1];
-    double lat1;
-    double long1;
-    bool isEnt1;
-    nodes.find(node1, lat1, long1, isEnt1);
-    long long node2 = f.NodeIDs[i];
-    double lat2;
-    double long2;
-    bool isEnt2;
-    nodes.find(node2, lat2, long2, isEnt2);
-    double dist1 = distBetween2Points(lat1, long1, lat2, long2);
-    double dist2 = distBetween2Points(lat2, long2, lat1, long1);
-    cout << "  Edge: (" << node1 << ", " << node2 << ", " << dist1 << ")" << endl;
-    cout << "  Edge: (" << node2 << ", " << node1 << ", " << dist2 << ")" << endl;
-  }
-}
-
-void print_exclamation(Footways& footways, graph& g, Nodes& nodes) {
-  for (Footway f : footways.MapFootways) {
-    if (f.ID == 986532630) {
-      cout << "Graph check of Footway ID " << f.ID << endl;
-      sanity_check(f, nodes);
-    }
-  }
-}
-
+// Class defining how priority queue should order items - in this case, will be by distance
 class prioritize
 {
 public:
@@ -108,12 +76,16 @@ public:
    }
 };
 
-vector<long long> Dijkstra(graph& G, long long startV, map<long long, double>& distances, map<long long, long long>& predecessors)
-{
+// Helper function - Dijstra's shortest pathfinding algorithm
+vector<long long> Dijkstra(graph& G, long long startV, map<long long, double>& distances, map<long long, long long>& predecessors) {
   constexpr double INF = numeric_limits<double>::max();
+  // Keep track of visited queue
   vector<long long>  visited;
+  // Priority queue to determine which node to visit next
   priority_queue<pair<long long, double>, vector<pair<long long, double>>, prioritize> unvisitedQueue;
+  // Keep track of which nodes are visited
   set<long long> visited_check;
+  // Set all distances of other vertices to infinite, initialize predecessor and push into priority queue
   for (long long v : G.getVertices()) {
     if (v != startV) {
       distances[v] = INF;
@@ -121,26 +93,34 @@ vector<long long> Dijkstra(graph& G, long long startV, map<long long, double>& d
       predecessors[v] = -1;
     }
   }
+  // Set start vertex distance, set predecessor and push into priority queue
   distances[startV] = 0;
   unvisitedQueue.push(make_pair(startV, distances[startV]));
   predecessors[startV] = -1;
   
+  // Repeat until all vertices are visited and shortest distances are calculated
   while (unvisitedQueue.size() != 0) {
+    // Get first element in priority queue
     auto cV = unvisitedQueue.top();
     long long currentV = cV.first;
     unvisitedQueue.pop();
     
+    // If distance to vertex is infinite, we know all vertices are unreachable
     if (distances[currentV] == INF) {
       break;
     }
+    // If vertex is already visited, try next vertex
     else if (visited_check.count(currentV) > 0) {
       continue;
     }
+    // Otherwise, visit the vertex
     else {
       visited.push_back(currentV);
       visited_check.insert(currentV);
     }
+    // Visit all vertex neighbors
     set<long long> neighbors = G.neighbors(currentV);
+    // Compare new distances and update as necessary
     for (long long n_v : neighbors) {
       double weight;
       G.getWeight(currentV, n_v, weight);
@@ -153,11 +133,14 @@ vector<long long> Dijkstra(graph& G, long long startV, map<long long, double>& d
       }
     }
   }
+  // All vertices visited
   return visited;
 }
 
+// Helper function - find shortest path between two buildings
 void navigate(Buildings& buildings, Nodes& nodes, Footways& footways, graph& g) {
   constexpr double INF = numeric_limits<double>::max();
+  // Get first building
   cout << "Enter start building name (partial or complete)>" << endl;
   string name1;
   getline(cin, name1);
@@ -198,6 +181,7 @@ void navigate(Buildings& buildings, Nodes& nodes, Footways& footways, graph& g) 
   }
   cout << "  Closest footway ID " << FOOTWAYIDS << ", node ID " << NODEIDS << ", distance " << min_distS << endl;
 
+  // Get second building
   cout << "Enter destination building name (partial or complete)>" << endl;
   string name2;
   getline(cin, name2);
@@ -238,11 +222,16 @@ void navigate(Buildings& buildings, Nodes& nodes, Footways& footways, graph& g) 
     }
   }
   cout << "  Closest footway ID " << FOOTWAYIDD << ", node ID " << NODEIDD << ", distance " << min_distD << endl;
+
+  // Using Dijstra's to find the shortest path from first to second building
   long long startV = NODEIDS;
   map<long long, double> distances;
-   auto dijkstra_nodes = Dijkstra(g, startV, distances, predecessors);
+  map<long long, long long> predecessors;
+  auto dijkstra_nodes = Dijkstra(g, startV, distances, predecessors);
   cout << "Shortest weighted path:" << endl;
   long long DestV = NODEIDD;
+
+  // If distance to second building is infinite, it is unreachable 
   if (distances[DestV] == INF) {
     cout << "**Sorry, destination unreachable" << endl;
     return;
@@ -251,14 +240,15 @@ void navigate(Buildings& buildings, Nodes& nodes, Footways& footways, graph& g) 
   cout << "  Distance: " << distances[DestV] << " miles" << endl;
   cout << "  Path: ";
 
+  // Create path between buildings using predecessors
   stack<long long> path;
   auto vertex = NODEIDD;
   path.push(vertex);
-
   while (predecessors[vertex] != -1) {
     path.push(predecessors[vertex]);
     vertex = predecessors[vertex];
   }
+  // Print path
   while (!path.empty()) {
     cout << path.top();
     path.pop();
@@ -266,13 +256,10 @@ void navigate(Buildings& buildings, Nodes& nodes, Footways& footways, graph& g) 
       cout << "->";
     }
   }
-
   cout << endl;
 }
 
-//
-// main
-//
+// Main
 int main()
 {
   cout << setprecision(12);
@@ -282,65 +269,42 @@ int main()
   Footways footways;
   graph G;
   
-  cout << "** NU open street map **" << endl;
+  cout << "** Open Street Map (University) **" << endl;
 
   string filename;
-
   cout << endl;
   cout << "Enter map filename> " << endl;
   getline(cin, filename);
 
-  //
-  // 1. load XML-based map file 
-  //
+  // If loading XML-based map failed - exit program
   if (!osmLoadMapFile(filename, xmldoc))
   {
-    // failed, error message already output
     return 0;
   }
   
-  //
-  // 2. read the nodes, which are the various known positions on the map:
-  //
+  // Read nodes
   nodes.readMapNodes(xmldoc);
-
-  //
-  // NOTE: let's sort so we can use binary search when we need 
-  // to lookup nodes.
-  //
+  // Sort nodes
   nodes.sortByID();
 
-  //
-  // 3. read the university buildings:
-  //
+  // Read university buildings
   buildings.readMapBuildings(xmldoc);
 
-  //
-  // 4. read the footways, which are the walking paths:
-  //
-  //
-  // TODO
-  //
+  // Read footways
   footways.readMapFootways(xmldoc);
 
-  
+  // Create graph
   add_vertices(nodes, G);
   add_edges(footways, G, nodes);
-  //
-  // 5. stats
-  //
+
+  // Print important stats about map
   cout << "# of nodes: " << nodes.getNumMapNodes() << endl;
   cout << "# of buildings: " << buildings.getNumMapBuildings() << endl;
   cout << "# of footways: " << footways.getNumMapFootways() << endl;
   cout << "# of graph vertices: " << G.NumVertices() << endl;
   cout << "# of graph edges: " << G.NumEdges() << endl;
-  //
-  // TODO
-  //
 
-  //
   // now let the user for search for 1 or more buildings:
-  //
   while (true)
   {
     string name;
