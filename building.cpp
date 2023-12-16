@@ -22,7 +22,7 @@ void Building::add(long long nodeid) {
 }
 
 // print relevant information about building
-//   this includes the name, address, location (latitude/longitude) and the nodes
+// -> this includes the name, address, location (latitude/longitude) and the nodes
 void Building::print(Nodes& nodes) {
   cout << this->Name << endl;
   cout << "Address: " << this->StreetAddress << endl;
