@@ -1,79 +1,62 @@
 /*node.cpp*/
 
-//
-// A node / position in the Open Street Map.
-// 
-// Prof. Joe Hummel
-// Northwestern University
-// CS 211: Winter 2023
-// 
+/// <sumary>
+/// This file provides methods to operate on nodes
+/// <summary>
 
+// Import relevant files & libraries
 #include "node.h"
-
 using namespace std;
 
-
-//
 // constructor
-//
 Node::Node(long long id, double lat, double lon, bool entrance)
   : ID(id), Lat(lat), Lon(lon), IsEntrance(entrance)
 {
-  //
-  // the proper technique is to use member initialization list above,
-  // in the same order as the data members are declared:
-  //
-  //this->ID = id;
-  //this->Lat = lat;
-  //this->Lon = lon;
-  //this->IsEntrance = entrance;
-
   Node::Created++;
 }
 
-//
-// copy constructor:
-//
+// Copy constructor
 Node::Node(const Node& other)
 {
   this->ID = other.ID;
   this->Lat = other.Lat;
   this->Lon = other.Lon;
   this->IsEntrance = other.IsEntrance;
-
   Node::Copied++;
 }
 
-//
-// accessors / getters
-//
+// Access data - get node ID
 long long Node::getID() {
-
   Node::CallsToGetID++;
-
   return this->ID;
 }
 
+// Access data - get latitude
 double Node::getLat() const {
   return this->Lat;
 }
 
+// Access data - get longitude
 double Node::getLon() const {
   return this->Lon;
 }
 
+// Access data - determine if node is entry to building
 bool Node::getIsEntrance() const {
   return this->IsEntrance;
 }
 
+// Access data - number of calls to get ID
 int Node::getCallsToGetID() {
   return Node::CallsToGetID;
 }
 
+// Access data - number of nodes created
 int Node::getCreated() {
   return Node::Created;
 }
 
+// Access data - number of nodes copied
 int Node::getCopied() {
   return Node::Copied;
 }
