@@ -282,8 +282,6 @@ int main() {
   
   // Read nodes
   nodes.readMapNodes(xmldoc);
-  // Sort nodes
-  nodes.sortByID();
 
   // Read university buildings
   buildings.readMapBuildings(xmldoc);

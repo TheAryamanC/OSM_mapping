@@ -56,19 +56,6 @@ void Nodes::readMapNodes(XMLDocument& xmldoc)
   }
 }
 
-// sort nodes by ID (bubble sort)
-void Nodes::sortByID() {
-  sort(this->MapNodes.begin(), this->MapNodes.end(),
-    [](Node& n1, Node& n2)
-    {
-      if (n1.getID() < n2.getID())
-        return true;
-      else
-        return false;
-    }
-  );
-}
-
 // find specific node
 bool Nodes::find(long long id, double& lat, double& lon, bool& isEntrance) {
   auto ptr = this->MapNodes.find(id);
