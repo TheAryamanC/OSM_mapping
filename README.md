@@ -11,3 +11,11 @@ TinyXML:
  
 OpenStreetMap:
     https://www.openstreetmap.org
+
+To use this software:
+   1. Go to https://www.openstreetmap.org
+   2. Export a map
+   3. Clone the repo to a directory on a remote server
+   4. Save the .osm file to the same directory
+   5. Type 'make build' into the terminal
+   6. Type './a.out' into the terminal and follow directions
