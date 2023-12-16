@@ -17,7 +17,6 @@
 using namespace std;
 using namespace tinyxml2;
 
-
 // Parse through document and read buildings
 void Buildings::readMapBuildings(XMLDocument& xmldoc) {
   XMLElement* osm = xmldoc.FirstChildElement("osm");

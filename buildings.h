@@ -18,7 +18,6 @@
 using namespace std;
 using namespace tinyxml2;
 
-
 // Collection of building objects
 class Buildings
 {

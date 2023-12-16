@@ -10,7 +10,6 @@
 #include "dist.h"
 using namespace std;
 
-
 // Find distance between two pairs of coordinates
 // NOTE: the order of the pairs of coordinates could have an impact on the result
 double distBetween2Points(double lat1, double long1, double lat2, double long2) {
