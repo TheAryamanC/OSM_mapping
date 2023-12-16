@@ -1,40 +1,22 @@
 /*dist.cpp*/
 
-//
-// Computes the distance between 2 positions, given in
-// (latitude, longitude) coordinates.
-// 
-// Prof. Joe Hummel
-// Northwestern University
-// CS 211: Winter 2023
-// 
+/// <sumary>
+/// This file provides a methods to find the distance (in miles) between two sets of coordinates
+/// <summary> 
 
+// Import relevant files & libraries
 #include <iostream>
 #include <cmath>
-
 #include "dist.h"
-
 using namespace std;
 
 
-//
-// DistBetween2Points
-//
-// Returns the distance in miles between 2 points (lat1, long1) and 
-// (lat2, long2). Latitudes are positive above the equator and 
-// negative below; longitudes are positive heading east of Greenwich 
-// and negative heading west. Example: Chicago is (41.88, -87.63).
-//
-// NOTE: you may get slightly different results depending on which 
-// (lat, long) pair is passed as the first parameter.
-// 
-double distBetween2Points(double lat1, double long1, double lat2, double long2)
-{
-  //
-  // Reference: http://www8.nau.edu/cvm/latlon_formula.html
-  //
+// Find distance between two pairs of coordinates
+// NOTE: the pair of coordinates used first could have an impact on the result
+double distBetween2Points(double lat1, double long1, double lat2, double long2) {
+  // We can use the haversine distance formula to do this
   double PI = 3.14159265;
-  double earth_rad = 3963.1;  // statue miles:
+  double earth_rad = 3963.1;
 
   double lat1_rad = lat1 * PI / 180.0;
   double long1_rad = long1 * PI / 180.0;
