@@ -260,8 +260,7 @@ void navigate(Buildings& buildings, Nodes& nodes, Footways& footways, graph& g) 
 }
 
 // Main
-int main()
-{
+int main() {
   cout << setprecision(12);
   XMLDocument xmldoc;
   Nodes nodes;
@@ -277,8 +276,7 @@ int main()
   getline(cin, filename);
 
   // If loading XML-based map failed - exit program
-  if (!osmLoadMapFile(filename, xmldoc))
-  {
+  if (!osmLoadMapFile(filename, xmldoc)) {
     return 0;
   }
   
@@ -304,42 +302,32 @@ int main()
   cout << "# of graph vertices: " << G.NumVertices() << endl;
   cout << "# of graph edges: " << G.NumEdges() << endl;
 
-  // now let the user for search for 1 or more buildings:
-  while (true)
-  {
+  // User options
+  while (true) {
     string name;
-
     cout << endl;
     cout << "Enter building name, * to list, @ to navigate, or $ to end> " << endl;
-
     getline(cin, name);
 
+    // Break out of loop and end program
     if (name == "$") {
       break;
     }
+    // List all buildings
     else if (name == "*") {
       buildings.print();
     }
-    else if (name == "!") {
-      print_exclamation(footways, G, nodes);
-    }
+    // Open navigation tool - find shortest path between buildings
     else if (name == "@") {
       navigate(buildings, nodes, footways, G);
     }
+    // Display important information about building
     else {
+      buildings.findAndPrint(name, nodes, footways); 
+    }
+  }
 
-      // 
-      // find every building that contains this name:
-      //
-      buildings.findAndPrint(name, nodes, footways);
-      
-    }//else
-
-  }//while
-
-  //
-  // done:
-  //
+  // Display statistics about operations performed (for optimization purposes)
   cout << endl;
   cout << "** Done  **" << endl;
   cout << "# of calls to getID(): " << Node::getCallsToGetID() << endl;
